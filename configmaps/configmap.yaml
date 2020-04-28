@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: microservices-configmap
+ namespace: development
+data:
+ AUTH: auth
