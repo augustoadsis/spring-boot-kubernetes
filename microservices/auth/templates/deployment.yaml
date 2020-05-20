@@ -29,25 +29,42 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: "kubernetes"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.targetPort }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /actuator/health/
               port: http
+            initialDelaySeconds: 40
           readinessProbe:
             httpGet:
               path: /actuator/health/
               port: http
+            initialDelaySeconds: 80
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "kubernetes"
+            - name: DATABASE_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-configmap
+                  key: DATABASE_URI
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_PASSWORD
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

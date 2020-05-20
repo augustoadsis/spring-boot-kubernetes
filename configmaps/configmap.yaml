@@ -4,4 +4,5 @@ metadata:
  name: microservices-configmap
  namespace: development
 data:
- AUTH: auth
+ DATABASE_URI: jdbc:mysql://mysql:3306/microservices?allowPublicKeyRetrieval=true&sslMode=DISABLED
+ RABBITMQ_URI: rabbit.cloudamqp.com
